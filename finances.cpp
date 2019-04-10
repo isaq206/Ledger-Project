@@ -66,6 +66,8 @@ int main() {
    //DATA-CONTENT VARIABLES
    string fileName = "\0";
    vector <string> recordContent;
+   string newData; //for when a new file is made
+
 
    //INPUT VARIABLES
    char choice;
@@ -73,11 +75,30 @@ int main() {
    //BEGINNING OF IMPLEMENTATION
 
    do {
-      cout << "What would you like to do?\n L- Load The Data.\n U - Update Finances.\n R - Review Data.\n S - Save The Data\n Q - Exit Program" 
+      cout << "What would you like to do?\n N - Create new document.\n L - Load The Data.\n U - Update Finances.\n R - Review Data.\n S - Save The Data\n Q - Exit Program" 
       << endl << "\n>";
       cin >> choice;
 
       switch(choice) {
+         case 'N':
+         case 'n':
+            cout << "Please enter new data.\n";
+            cin.ignore();
+            getline(cin, newData);
+            cin.ignore();
+            recordContent.clear();
+            try
+            {
+               recordContent.push_back(newData);
+            }
+            catch(std::bad_alloc)
+            {
+               cout << "Cannot push_back new data" << endl;
+            }
+            cout << "What is the name of new file?\n";
+            cin >> fileName;
+            saveData(fileName, recordContent);
+            break;
          case 'L':
          case 'l':
             try {
