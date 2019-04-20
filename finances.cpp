@@ -4,8 +4,6 @@
 #include <cstring>
 using namespace std;
 
-//a comment to test git
-
 void grabInFile(string & fileName) 
 {
    cout << "Enter record name: ";
@@ -24,36 +22,37 @@ void readInFile(string fileName, vector <string> &recordContent) throw (const ch
    if (!recordContent.empty())
       recordContent.clear();
 
-   string content;
+   string fileContent;
+   string contentToPush = "";
+   int indexForContent = 0;
+   int indexForRecord = 0;
 
-   int index = 0;
-   while(fin >> content) 
+   
+
+   getline(fin, fileContent);
+//   cout << fileContent[1] << endl;
+
+   while(fileContent[indexForContent] != '\0')
    {
-      recordContent.push_back(content);
-      cout << recordContent[index] << endl;
-      index++;
+      if(fileContent[indexForContent] != '!')
+      {
+         contentToPush += fileContent[indexForContent];
+         indexForContent++;
+      }
+      else
+      {
+         recordContent.push_back(contentToPush);
+         cout << recordContent[indexForRecord] << endl;
+         contentToPush.clear();
+         indexForRecord++;
+         indexForContent++;
+      }
    }
 
    fin.close();
 }
 
-void updateData(vector <string> &recordContent) 
-{
-   string data;
-
-   cout << "*NOTE: You can only file with 100 things at a time. Please enter \'done\' when finished updating.\n";
-   cin.ignore();
-   do
-   {
-      cout << "Enter data: ";
-      cin >> data;
-      if(data != "done")
-         recordContent.push_back(data);
-   }
-   while(data != "done");
-}
-
-void saveData(string fileName, vector <string> recordContent) throw (const char*) 
+void saveData(string fileName, vector <string> recordContent) throw (const char*)
 {
    ofstream fout;
    fout.open(fileName);
@@ -63,31 +62,80 @@ void saveData(string fileName, vector <string> recordContent) throw (const char*
    }
 
    int counter = 0;
-   for (vector <string>::iterator it = recordContent.begin(); it != recordContent.end(); it++, counter++) 
-   { 
-      fout << recordContent[counter] << " ";
+   for (vector <string>::iterator it = recordContent.begin(); it != recordContent.end(); it++, counter++)
+   {
+      fout << recordContent[counter] << " !";
    }
 
    fout.close();
 }
 
+void updateData(vector <string> &recordContent) 
+{
+   string data;
+   int index = 0;
+
+   cout << "*NOTE: You can only file with 100 things at a time. If you want to enter\n multiple pieces of information into\n the file, "
+   << "type one space and then a \'!\' right after. Otherwise, please enter \n \'done\' when finished updating.\n";
+   cin.ignore();
+   do
+   {
+      cout << "Enter data: ";
+      getline(cin, data);
+      if(data != "done")
+      {
+         recordContent.push_back(data);
+         cout << recordContent[index] << endl;
+         index++;
+      }
+      cin.ignore();
+   }
+   while(data != "done");
+
+   cout << endl;
+}
+
 void createData(vector <string> & recordContent, string & fileName)
 {
    string newData; //for when a new file is made
+   int index = 0;
 
+   recordContent.clear(); //empty whatever is in here so we don't mix data
+
+/*
    cout << "Please enter new data.\n";
    cin.ignore();
    getline(cin, newData);
+*/
 
-   recordContent.clear();
-   try
-   {
-      recordContent.push_back(newData);
+   cout << "*NOTE: You can only file with 100 things at a time. If you want to enter\n multiple pieces of information into the file, "
+   << "type one space and then a \'!\' right after.\n Otherwise, please enter \'done\' when finished updating.\n";
+   cin.ignore();
+   do
+   {  
+      cout << "Enter data: ";
+      getline(cin, newData);
+      if(newData != "done")
+      {  
+         try
+         {
+            recordContent.push_back(newData);
+         }
+         catch(std::bad_alloc)
+         {
+            cout << "Cannot push_back new data" << endl;
+         }
+         cout << recordContent[index] << endl;
+         index++;
+         cin.ignore();
+      }
+      else
+      {
+         cin.ignore();
+      }
    }
-   catch(std::bad_alloc)
-   {
-      cout << "Cannot push_back new data" << endl;
-   }
+   while(newData != "done");
+
    grabInFile(fileName);
    cout << endl;
    saveData(fileName, recordContent);
@@ -135,8 +183,10 @@ int main()
          case 'r':
             for (vector <string>::iterator it = recordContent.begin(); it != recordContent.end(); it++) 
             {
+               int counter = 1;
                cout << *it << " - THIS STATEMENT IS FOR DEBUGGING PURPOSES" << endl;
-               
+               cout << counter << endl;
+               counter++;
             }
             cout << endl;
             break;
