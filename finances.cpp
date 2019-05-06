@@ -72,18 +72,52 @@ void saveData(string fileName, vector <string> recordContent) throw (const char*
 
 void updateData(vector <string> &recordContent) 
 {
-   string choice;
+   cin.ignore();
+   string choice = "\0";
    cout << "Where do you want to start updating? (1, 2, 3,...) Based on \"Review Data\" option in main menu. \nYou can type \"end\""
         << "if you want to update at end of file. Type \"Back\" if you want to go back to main menu.\n\n" << ">";
    cin >> choice;
+   cout << endl;
 
    if(choice == "Back" || choice == "back")
+   {   
       return;
+   }
 
-   if(choice != "end" || choice != "End")
+   else if(choice == "end" || choice == "End")
    {
       string data;
       int index = 0;
+
+cout << "This means it is in the \"Update at the end\"\n";
+
+      cout << "*When finished, please enter \'done\' when finished updating.\n";
+      cout << endl;
+      cin.ignore();
+      do
+      {
+         cout << "Enter data. Press enter when finished with each input: ";
+         getline(cin, data);
+         if(data != "done")
+         {
+            recordContent.push_back(data);
+            cout << recordContent[index] << endl;
+            index++;
+         }
+         cin.ignore();
+      }
+      while(data != "done");
+
+      cout << endl;
+      return;
+   }
+
+   else
+   {
+      string data;
+      int index = 0;
+
+cout << "This means it is in the \"Update somewhere besides end\"\n";
 
       cout << "When finished, please enter \'done\' when finished updating.\n";
       cin.ignore();
@@ -94,9 +128,9 @@ void updateData(vector <string> &recordContent)
          if(data != "done")
          {
             int count = recordContent.size();
-            int designation;
+            int designation; 
             istringstream ss (choice);
-            ss >> designation; 
+            ss >> designation;
 
             recordContent.push_back(recordContent[count-1]);
 
@@ -113,32 +147,6 @@ void updateData(vector <string> &recordContent)
       }
       while(data != "done");
 
-      cout << endl;
-      return;
-   }
-
-
-   else
-   {
-      string data;
-      int index = 0;
-
-      cout << "*When finished, please enter \'done\' when finished updating.\n";
-      cin.ignore();
-      do
-      {
-         cout << "Enter data. Press enter when finished with each input: ";
-         getline(cin, data);
-         if(data != "done")
-         {
-            recordContent.push_back(data);
-            cout << recordContent[index] << endl;
-            index++;
-         }
-         cin.ignore();
-      }
-      while(data != "done");
-   
       cout << endl;
       return;
    }
