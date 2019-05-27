@@ -4,7 +4,9 @@
 #include <cstring>
 #include <sstream>
 using namespace std;
-
+/*************************************************************************
+* This method is used for grabbing the file name.
+*************************************************************************/
 void grabInFile(string & fileName) 
 {
    cout << "Enter record name: ";
@@ -12,6 +14,11 @@ void grabInFile(string & fileName)
    cout << endl;
 }
 
+/*************************************************************************
+* This method is used to read in the text file. The ! in the actual text
+* file is used as a sort of key for the program to know where the end of one 
+* data entry is.
+*************************************************************************/
 void readInFile(string fileName, vector <string> &recordContent) throw (const char*) 
 {
    ifstream fin;
@@ -51,7 +58,11 @@ void readInFile(string fileName, vector <string> &recordContent) throw (const ch
 
    fin.close();
 }
-
+/*************************************************************************
+* This method is used to save the data contained in the local vector structure.
+* text file. The ! in the actual text file is used as a sort of key for the 
+* program to know where the end of one data entry is.
+*************************************************************************/
 void saveData(string fileName, vector <string> recordContent) throw (const char*)
 {
    ofstream fout;
@@ -70,6 +81,12 @@ void saveData(string fileName, vector <string> recordContent) throw (const char*
    fout.close();
 }
 
+/*************************************************************************
+* This method is used to update the contents of the text file once it has
+* been loaded in or a new document has been created. The user will not need
+* to type or even worry/know about the ! in the source file. The program
+* takes care of that.
+*************************************************************************/
 void updateData(vector <string> &recordContent) 
 {
    cin.ignore();
@@ -89,7 +106,8 @@ void updateData(vector <string> &recordContent)
       string data;
       int index = 0;
 
-cout << "This means it is in the \"Update at the end\"\n";
+//This line was used for debugging and figuring out which if the logic will make it go to.
+//cout << "This means it is in the \"Update at the end\"\n";
 
       cout << "*When finished, please enter \'done\' when finished updating.\n";
       cout << endl;
@@ -117,7 +135,8 @@ cout << "This means it is in the \"Update at the end\"\n";
       string data;
       int index = 0;
 
-cout << "This means it is in the \"Update somewhere besides end\"\n";
+//This line was used for debugging and figuring out which if the logic will make it go to.
+//cout << "This means it is in the \"Update somewhere besides end\"\n";
 
       cout << "When finished, please enter \'done\' when finished updating.\n";
       cin.ignore();
@@ -152,6 +171,11 @@ cout << "This means it is in the \"Update somewhere besides end\"\n";
    }
 }
 
+/*************************************************************************
+* This method is used to create a new text file. The ! in the actual text
+* file is used as a sort of key for the program to know where the end of one 
+* data entry is.
+*************************************************************************/
 void createData(vector <string> & recordContent, string & fileName)
 {
    string newData; //for when a new file is made
@@ -159,14 +183,7 @@ void createData(vector <string> & recordContent, string & fileName)
 
    recordContent.clear(); //empty whatever is in here so we don't mix data
 
-/*
-   cout << "Please enter new data.\n";
-   cin.ignore();
-   getline(cin, newData);
-*/
-
-   cout << "*NOTE: You can only file with 100 things at a time. If you want to enter\n multiple pieces of information into the file, "
-   << "type one space and then a \'!\' right after.\n Otherwise, please enter \'done\' when finished updating.\n";
+   cout << "*NOTE: Press enter after each entry to then enter next entry. Type \'done\' when finished with document.\n";
    cin.ignore();
    do
    {  
@@ -198,6 +215,9 @@ void createData(vector <string> & recordContent, string & fileName)
    saveData(fileName, recordContent);
 }
 
+/*************************************************************************
+* Main method. What else can I say.
+*************************************************************************/
 int main() 
 {
    //DATA-CONTENT VARIABLES
