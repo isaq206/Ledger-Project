@@ -1,22 +1,23 @@
 #include "record.h"
 #include <fstream>
 #include <iostream>
+#include <vector>
 
 /*************************************************************************
 * This method is used to read in the text file. The ! in the actual text
 * file is used as a sort of key for the program to know where the end of one
 * data entry is.
 *************************************************************************/
-void readInFile(std::string fileName, std::vector<std::string> &recordContent) throw (const char*)
+void Record::readInRecord() throw (const char*)
 {
    std::ifstream fin;
-   fin.open(fileName);
+   fin.open(this->record_name);
 
    if (fin.fail())
       throw ("Error: Cannot read file.");
 
-   if (!recordContent.empty())
-      recordContent.clear();
+   if (!record_item.empty())
+      record_item.clear();
 
    std::string fileContent;  //This variable is for the data that is being read in exclusively
    std::string contentToPush = "";  //This variable is going to be the on eused as a medium for pushing back onto the vector
@@ -35,7 +36,7 @@ void readInFile(std::string fileName, std::vector<std::string> &recordContent) t
       }
       else if(fileContent[indexForContent] == '!')
       {
-         recordContent.push_back(contentToPush);
+         this->record_item.push_back(contentToPush);
 //This line was used for debugging purposes.
 //         cout << recordContent[indexForRecord] << endl;
          contentToPush.clear();
@@ -52,19 +53,19 @@ void readInFile(std::string fileName, std::vector<std::string> &recordContent) t
 * text file. The ! in the actual text file is used as a sort of key for the
 * program to know where the end of one data entry is.
 *************************************************************************/
-void saveData(std::string fileName, std::vector<std::string> recordContent) throw (const char*)
+void Record::saveRecord() throw (const char*)
 {
    std::ofstream fout;
-   fout.open(fileName);
+   fout.open(this->record_name);
 
    if (fout.fail()) {
       throw ("Error: Cannot save file.");
    }
 
    int counter = 0;
-   for (std::vector<std::string>::iterator it = recordContent.begin(); it != recordContent.end(); it++, counter++)
+   for (std::vector<std::string>::iterator it = this->record_item.begin(); it != this->record_item.end(); it++, counter++)
    {
-      fout << recordContent[counter] << " !";
+       fout << this->record_item[counter] << " !";
    }
 
    fout.close();
@@ -76,32 +77,32 @@ void saveData(std::string fileName, std::vector<std::string> recordContent) thro
 * to type or even worry/know about the ! in the source file. The program
 * takes care of that.
 *************************************************************************/
-void updateData(std::vector<std::string> &recordContent)
+void Record::updateRecord()
 {
-   string data;
+   std::string data;
    int index = 0;
-   string choice = "\0";
+   char choice[2] = "\0";
 
    std::cin.ignore();
-   std::cout << "Where do you want to start updating? (1, 2, 3,...) Based on \"Review Data\" option in main menu. \nYou can type \"end\""
-        << "if you want to update at end of file. Type \"Back\" if you want to go back to main menu.\n\n" << ">";
+   std::cout << "Where do you want to start updating? (1, 2, 3,...) Based on \"Review Data\" option in main menu. \nYou can type \"E or e\""
+        << "if you want to append at end of file. Type \"B or b\" if you want to go back to main menu.\n\n" << ">";
    std::cin >> choice;
-   std::cout << endl;
+   std::cout << std::endl;
 
 
-	if(choice == "Back" || choice == "back")
+	if(choice == "B" || choice == "b")
 	{
 		return;
 	}
 
-	else if(choice == "end" || choice == "End")
+	else if(choice == "E" || choice == "e")
 	{
 
 //This line was used for debugging and figuring out which if the logic will make it go to.
 //cout << "This means it is in the \"Update at the end\"\n";
 
 		std::cout << "*When finished, please enter \'done\' when finished updating.\n";
-		std::cout << endl;
+		std::cout << std::endl;
 	    std::cin.ignore();
 		do
 		{
@@ -109,51 +110,47 @@ void updateData(std::vector<std::string> &recordContent)
 			std::getline(std::cin, data);
 			if(data != "done")
 			{
-				recordContent.push_back(data);
-				std::cout << recordContent[index] << endl;
+				this->record_item.push_back(data);
+				std::cout << this->record_item[index] << std::endl;
 				index++;
 			}
 			std::cin.ignore();
 		}
 		while(data != "done");
 
-		std::cout << endl;
+		std::cout << std::endl;
 		return;
 	}
 
 	else
 	{
-//This line was used for debugging and figuring out which if the logic will make it go to.
-//cout << "This means it is in the \"Update somewhere besides end\"\n";
-
 		std::cout << "When finished, please enter \'done\' when finished updating.\n";
 		std::cin.ignore();
 		do
 		{
-			std::cout << "Enter data. Press enter when finished with each input: ";
+			std::cout << "Enter data. Press enter when finished with each input. Type \'done\' when finished.: ";
 			std::getline(std::cin, data);
 			if(data != "done")
 			{
-				int count = recordContent.size();
+				int count = this->record_item.size();
 				int designation;
-				destination = (int)choice;
+				designation = atoi(choice);
 
-				recordContent.push_back(recordContent[count-1]);
+				this->record_item.push_back(this->record_item[count-1]);
 
 
-				for(vector<string>::reverse_iterator it = recordContent.rbegin(); count > designation; ++it)
+				for(std::vector<std::string>::reverse_iterator it = this->record_item.rbegin(); count > designation; ++it)
 				{
-					recordContent[count] = recordContent[count-1];
-//               cout << recordContent[count] << endl;
+					this->record_item[count] = this->record_item[count-1];
 					count--;
 				}
-				recordContent[count] = data;
+				this->record_item[count] = data;
 			}
 //         cin.ignore();
 		}
 		while(data != "done");
 
-		std::cout << endl;
+		std::cout << std::endl;
 		return;
 	}
 }
@@ -163,30 +160,30 @@ void updateData(std::vector<std::string> &recordContent)
 * file is used as a sort of key for the program to know where the end of one
 * data entry is.
 *************************************************************************/
-void createData(vector <string> & recordContent, string & fileName)
+void Record::createRecord()
 {
-   string newData; //for when a new file is made
+   std::string newData; //for when a new file is made
    int index = 0;
 
-   recordContent.clear(); //empty whatever is in here so we don't mix data
+   this->record_item.clear(); //empty whatever is in here so we don't mix data
 
-   cout << "*NOTE: Press enter after each entry to then enter next entry. Type \'done\' when finished with document.\n";
-   cin.ignore();
+   std::cout << "*NOTE: Press enter after each entry to then enter next entry. Type \'done\' when finished with document.\n";
+   std::cin.ignore();
    do
    {
-      cout << "Enter data. Type \'done\' to finish: ";
-      getline(cin, newData);
+       std::cout << "Enter data. Type \'done\' to finish: ";
+       std::getline(std::cin, newData);
       if(newData != "done")
       {
          try
          {
-            recordContent.push_back(newData);
+            this->record_item.push_back(newData);
          }
          catch(std::bad_alloc)
          {
-            cout << "Cannot push_back new data" << endl;
+             std::cout << "Cannot push_back new data" << std::endl;
          }
-         cout << recordContent[index] << endl;
+         std::cout << this->record_item[index] << std::endl;
          index++;
 //         cin.ignore("\n");
       }
@@ -197,8 +194,35 @@ void createData(vector <string> & recordContent, string & fileName)
    }
    while(newData != "done");
 
-   grabInFile(fileName);
-   cout << endl;
-   saveData(fileName, recordContent);
+//   this->readInRecord();
+   std::cout << std::endl;
+   this->saveRecord();
 }
+
+/*************************************************************************
+* This method is used for reviewing the contents of the given record object
+* that the method was invoked from.
+*************************************************************************/
+void Record::reviewRecord()
+{
+    this->review_counter = 0;
+    for (std::vector<std::string>::iterator it = this->record_item.begin(); it != record_item.end(); it++)
+    { 
+        std::cout << review_counter << ". " << *it << std::endl;
+        review_counter++;
+    } 
+    std::cout << std::endl;
+}
+
+
+/*************************************************************************
+* The following setters and getters are for the member variables of the
+* record object you are invoking them for.
+*************************************************************************/
+void Record::setRecordName(std::string record_name) { this->record_name = record_name; }
+std::string Record::getRecordName() { return this->record_name; }
+void Record::setSSFileContent() { }
+void Record::getSSFileContent() { }
+void Record::setNewRecord() { }
+void Record::getNewRecord() { }
 

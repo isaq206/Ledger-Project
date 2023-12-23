@@ -1,2 +1,2 @@
-a.out: finances.cpp
-	g++ finances.cpp --std=c++11
+a.out: finances.cpp record.cpp record.h
+	g++ finances.cpp record.cpp --std=c++11
