@@ -13,9 +13,11 @@ int main()
 {
    //INPUT VARIABLES
    char choice;
+   std::string temp_record_name;
 
-   //INTEGER VARIABLES
-   int reviewCounter; //Used in showing location of each item in vector when reviewing the contents.
+   //Record Object. Currently, we are only going to handle one record at a time.
+   //Eventually, I want to make it so X number of records can handled at a time.
+   Record record;
 
    //BEGINNING OF IMPLEMENTATION
 
@@ -28,14 +30,20 @@ int main()
       switch(choice) {
          case 'N':
          case 'n':
-            //createData(recordContent, fileName);
+            std::cout << "Please enter the name of new record to create: ";
+            std::cin >> temp_record_name;
+            record.setRecordName(temp_record_name);
+//            record.createRecord();
             break;
          case 'L':
          case 'l':
             try 
             {
               // grabInFile(fileName);
-              // readInFile(fileName, recordContent);
+                std::cout << "Please enter the name of the record to import: ";
+                std::cin >> temp_record_name;
+                record.setRecordName(temp_record_name);
+                record.readInRecord();
             }
             catch (const char* e)
             {

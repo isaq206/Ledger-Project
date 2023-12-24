@@ -8,10 +8,22 @@
 class Record
 {
     private:
-        std::vector<std::string> record_item;
+
+        //This struct hold the fields of a record. Item type(corresponding enum exists),
+        //item name, item description(?), price, and date.
+        struct record_body
+        {
+            int item_type;
+            int item_price;
+            std::string item_name;
+            //std::string item_description; //Don't know if I want this yet.
+            std::string item_date;
+        };
+
+        std::vector<record_body> record_item;
         std::string record_name;
         std::stringstream ss_file_content;
-        std::string new_record_content;
+        std::string new_record_content; //Used when updating a record with a new update or maybe entry.
         int review_counter;
 
         int io_error;
