@@ -22,17 +22,17 @@ void Record::readInRecord() throw (const char*)
     if (fin.fail())
         throw ("Error: Cannot read file.");
 
-    if (!record_item.empty())
-      record_item.clear();
+//    if (!record_item.empty())
+//      record_item.clear();
 
-//   std::getline(fin, this->ss_file_content);
+//    std::getline(fin, this->ss_file_content);
     this->ss_file_content << fin.rdbuf();
-    while(fin[index_for_record] != '\0')
-    {
-        if(fin[index_for_record] != '\n')
+    while(this->ss_file_content.empty())
+	{
+        if(this->ss_file_content.str()[index_for_record] != '\n')
             ss_file_content << fin[index_for_record];
         else
-            std::cout << "A newline was encountered.\n";
+            //std::cout << "A newline was encountered.\n";
     }
 
 //   while(ss_file_content[indexForContent] != '\0')
