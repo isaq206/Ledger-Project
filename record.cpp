@@ -1,6 +1,7 @@
 #include "record.h"
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include <vector>
 
 /*************************************************************************
@@ -11,8 +12,7 @@
 void Record::readInRecord() throw (const char*)
 {
     std::string fileContent;  //This variable is for the data that is being read in exclusively
-    std::string contentToPush = "";  //This variable is going to be the on eused as a medium for pushing back onto the vector
-//    int indexForContent = 0;
+    std::string content_to_push = "";  //This variable is going to be the on eused as a medium for pushing back onto the vector
     int index_for_record = 0;
     record_body temp_body;
 
@@ -25,54 +25,20 @@ void Record::readInRecord() throw (const char*)
     if (!record_item.empty())
       record_item.clear();
 
-//   std::getline(fin, this->ss_file_content);
     this->ss_file_content << fin.rdbuf();
-    while(fin[index_for_record] != '\0')
+    
+    fin.close();
+
+    while(this->ss_file_content >> temp_body.item_date 
+                                >> temp_body.item_type
+                                >> temp_body.item_name
+                                >> temp_body.item_price)
     {
-        if(fin[index_for_record] != '\n')
-            ss_file_content << fin[index_for_record];
-        else
-            std::cout << "A newline was encountered.\n";
+        this->record_item.push_back(temp_body);
+
+        index_for_record++;
     }
-
-//   while(ss_file_content[indexForContent] != '\0')
-//   {
-//      if(ss_file_content[indexForContent] != '!')
-//      {
-//         contentToPush += ss_file_content[indexForContent];
-//         indexForContent++;
-//      }
-//      else if(ss_file_content[indexForContent] == '!')
-//      {
-//         this->record_item.push_back(contentToPush);
-//         contentToPush.clear();
-//         indexForRecord++;
-//         indexForContent++;
-//      }
-//   }
-   std::cout << "Contents of stringstream: " << ss_file_content.str() << std::endl;
-//   this->ss_file_content >> this->record_item[this->record_item.size()-1].item_type 
-//                        >> this->record_item[this->record_item.size()-1].item_name
-//                        >> this->record_item[this->record_item.size()-1].item_price
-//                        >> this->record_item[this->record_item.size()-1].item_date;
-   this->ss_file_content >> temp_body.item_type 
-                        >> temp_body.item_price
-                        >> temp_body.item_name
-                        >> temp_body.item_date;
-
-//   fin >> this->record_item[this->record_item.size()-1].item_type 
-//       >> this->record_item[this->record_item.size()-1].item_name
-//       >> this->record_item[this->record_item.size()-1].item_price
-//       >> this->record_item[this->record_item.size()-1].item_date;
-   this->record_item.push_back(temp_body);
-
-   std::cout << "The contents of the read in are as follows: \n\tItem Type: " << this->record_item[this->record_item.size()-1].item_type
-             << "\n\t Item Price: " << this->record_item[this->record_item.size()-1].item_price
-             << "\n\t Item Name: " << this->record_item[this->record_item.size()-1].item_name
-             << "\n\t Item Date: " << this->record_item[this->record_item.size()-1].item_date
-             << std::endl;
-
-   fin.close();
+    reviewRecord();
 }
 
 ///*************************************************************************
@@ -226,20 +192,29 @@ void Record::readInRecord() throw (const char*)
 //   this->saveRecord();
 //}
 //
-///*************************************************************************
-//* This method is used for reviewing the contents of the given record object
-//* that the method was invoked from.
-//*************************************************************************/
-//void Record::reviewRecord()
-//{
-//    this->review_counter = 0;
-//    for (std::vector<std::string>::iterator it = this->record_item.begin(); it != record_item.end(); it++)
-//    { 
-//        std::cout << review_counter << ". " << *it << std::endl;
-//        review_counter++;
-//    } 
-//    std::cout << std::endl;
-//}
+/*************************************************************************
+* This method is used for reviewing the contents of the given record object
+* that the method was invoked from.
+*************************************************************************/
+void Record::reviewRecord()
+{
+    this->review_counter = 0;
+    std::cout << "========================================================================================================================================================\n"
+              << "|" << std::setw(11) << "Date" << std::setw(7) << "|" << std::setw(11) << "Type" << std::setw(7) << "|" 
+              << std::setw(11) << "Name" << std::setw(7) << "|" << std::setw(12) << "Price" << std::setw(7) << "|\n";
+
+    for (std::vector<record_body>::iterator it = this->record_item.begin(); it != this->record_item.end(); it++)
+    { 
+        std::cout << "|" << std::setw(17) << (*it).item_date
+            << "|" << std::setw(17) << (*it).item_type
+            << "|" << std::setw(17) << (*it).item_name
+            << "|" << std::setw(17) << std::fixed << std::setprecision(2) << (*it).item_price
+            << "|" << std::endl;
+        review_counter++;
+    } 
+    std::cout << "========================================================================================================================================================\n";
+    std::cout << std::endl;
+}
 
 
 /*************************************************************************
@@ -249,7 +224,7 @@ void Record::readInRecord() throw (const char*)
 void Record::setRecordName(std::string record_name) { this->record_name = record_name; }
 std::string Record::getRecordName() { return this->record_name; }
 void Record::setSSFileContent() { }
-void Record::getSSFileContent() { }
+std::stringstream Record::getSSFileContent() { }
 void Record::setNewRecord() { }
 void Record::getNewRecord() { }
 

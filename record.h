@@ -13,11 +13,11 @@ class Record
         //item name, item description(?), price, and date.
         struct record_body
         {
-            int item_type;
-            int item_price;
-            std::string item_name;
-            //std::string item_description; //Don't know if I want this yet.
             std::string item_date;
+            int item_type;
+            std::string item_name;
+            float item_price;
+            //std::string item_description; //Don't know if I want this yet.
         };
 
         std::vector<record_body> record_item;
@@ -40,7 +40,7 @@ class Record
         void setRecordName(std::string);
         std::string getRecordName();
         void setSSFileContent();
-        void getSSFileContent();
+        std::stringstream getSSFileContent();
         void setNewRecord();
         void getNewRecord();
 };

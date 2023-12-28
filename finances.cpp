@@ -39,7 +39,6 @@ int main()
          case 'l':
             try 
             {
-              // grabInFile(fileName);
                 std::cout << "Please enter the name of the record to import: ";
                 std::cin >> temp_record_name;
                 record.setRecordName(temp_record_name);
@@ -56,7 +55,7 @@ int main()
             break;
          case 'R':
          case 'r':
-
+            record.reviewRecord();
             break;
          case 'S':
          case 's':
