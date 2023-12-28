@@ -11,9 +11,6 @@
 *************************************************************************/
 void Record::readInRecord() throw (const char*)
 {
-    std::string fileContent;  //This variable is for the data that is being read in exclusively
-    std::string content_to_push = "";  //This variable is going to be the on eused as a medium for pushing back onto the vector
-    int index_for_record = 0;
     record_body temp_body;
 
     std::ifstream fin;
@@ -22,8 +19,8 @@ void Record::readInRecord() throw (const char*)
     if (fin.fail())
         throw ("Error: Cannot read file.");
 
-    if (!record_item.empty())
-      record_item.clear();
+//    if (!record_item.empty())
+//      record_item.clear();
 
     this->ss_file_content << fin.rdbuf();
     
@@ -35,8 +32,6 @@ void Record::readInRecord() throw (const char*)
                                 >> temp_body.item_price)
     {
         this->record_item.push_back(temp_body);
-
-        index_for_record++;
     }
     reviewRecord();
 }
