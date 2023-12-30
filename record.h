@@ -14,7 +14,7 @@ class Record
         struct record_body
         {
             std::string item_date;
-            int item_type;
+            std::string item_type;
             std::string item_name;
             float item_price;
             //std::string item_description; //Don't know if I want this yet.

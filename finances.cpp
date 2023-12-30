@@ -22,7 +22,7 @@ int main()
    //BEGINNING OF IMPLEMENTATION
 
    do {
-       std::cout << "What would you like to do?\n N - Create new document.\n L - Load The Data.\n U - Update Finances.\n R - Review Data.\n S - Save The Data\n Q - Exit Program" 
+       std::cout << "What would you like to do?\n N - Create new document. --PLEASE!!! Make sure to save your work before create a new record!--\n L - Load The Data.\n U - Update Finances.\n R - Review Data.\n S - Save The Data\n Q - Exit Program." 
       << std::endl << "\n>";
        std::cin >> choice;
        std::cout << std::endl;
@@ -33,7 +33,7 @@ int main()
             std::cout << "Please enter the name of new record to create: ";
             std::cin >> temp_record_name;
             record.setRecordName(temp_record_name);
-//            record.createRecord();
+            record.createRecord();
             break;
          case 'L':
          case 'l':
@@ -59,8 +59,18 @@ int main()
             break;
          case 'S':
          case 's':
-            //grabInFile(fileName);
-            //saveData(fileName, recordContent);
+            std::cout << "Save record under current name? Y/N: ";
+            std::cin >> choice;
+            if (choice == 'Y' || choice == 'y')
+                record.saveRecord();
+            else if (choice == 'N' || choice == 'n')
+            {
+                std::cout << "Please type in the new name of the file to save to: ";
+                std::cin >> temp_record_name;
+                record.setRecordName(temp_record_name);
+            }
+            else
+                std::cout << "Invalid character entered when saving record. Please try again." << std::endl;
             break;
          case 'Q':
          case 'q':

@@ -36,29 +36,32 @@ void Record::readInRecord() throw (const char*)
     reviewRecord();
 }
 
-///*************************************************************************
-//* This method is used to save the data contained in the local vector structure.
-//* text file. The ! in the actual text file is used as a sort of key for the
-//* program to know where the end of one data entry is.
-//*************************************************************************/
-//void Record::saveRecord() throw (const char*)
-//{
-//   std::ofstream fout;
-//   fout.open(this->record_name);
-//
-//   if (fout.fail()) {
-//      throw ("Error: Cannot save file.");
-//   }
-//
-//   int counter = 0;
-//   for (std::vector<std::string>::iterator it = this->record_item.begin(); it != this->record_item.end(); it++, counter++)
-//   {
-//       fout << this->record_item[counter] << " !";
-//   }
-//
-//   fout.close();
-//}
-//
+/*************************************************************************
+* This method is used to save the data contained in the local vector structure.
+* text file. The ! in the actual text file is used as a sort of key for the
+* program to know where the end of one data entry is.
+*************************************************************************/
+void Record::saveRecord() throw (const char*)
+{
+   std::ofstream fout;
+   fout.open(this->record_name);
+
+   if (fout.fail()) {
+      throw ("Error: Cannot save file.");
+   }
+
+   int counter = 0;
+   for (std::vector<record_body>::iterator it = this->record_item.begin(); it != this->record_item.end(); it++, counter++)
+   {
+       fout << this->record_item[counter].item_date << ", "
+            << this->record_item[counter].item_type << ", " 
+            << this->record_item[counter].item_name << ", "
+            << this->record_item[counter].item_price << "\n";
+   }
+
+   fout.close();
+}
+
 ///*************************************************************************
 //* This method is used to update the contents of the text file once it has
 //* been loaded in or a new document has been created. The user will not need
@@ -143,50 +146,62 @@ void Record::readInRecord() throw (const char*)
 //	}
 //}
 //
-///*************************************************************************
-//* This method is used to create a new text file. The ! in the actual text
-//* file is used as a sort of key for the program to know where the end of one
-//* data entry is.
-//*************************************************************************/
-//void Record::createRecord()
-//{
-//   std::string newData; //for when a new file is made
-//   int index = 0;
-//
-//   this->record_item.clear(); //empty whatever is in here so we don't mix data
-//
-//   std::cout << "*NOTE: Press enter after each entry to then enter next entry. Type \'done\' when finished with document.\n";
-//   std::cin.ignore();
-//   do
-//   {
-//       std::cout << "Enter data. Type \'done\' to finish: ";
-//       std::getline(std::cin, newData);
-//      if(newData != "done")
-//      {
-//         try
-//         {
-//            this->record_item.push_back(newData);
-//         }
-//         catch(std::bad_alloc)
-//         {
-//             std::cout << "Cannot push_back new data" << std::endl;
-//         }
-//         std::cout << this->record_item[index] << std::endl;
-//         index++;
-////         cin.ignore("\n");
-//      }
-////      else
-////      {
-////         cin.ignore("\n");
-////      }
-//   }
-//   while(newData != "done");
-//
-////   this->readInRecord();
-//   std::cout << std::endl;
-//   this->saveRecord();
-//}
-//
+/*************************************************************************
+* This method is used to create a new text file. The ! in the actual text
+* file is used as a sort of key for the program to know where the end of one
+* data entry is.
+*************************************************************************/
+void Record::createRecord()
+{
+    record_body new_data; //for when a new file is made
+    int index = 0;
+    char finished_creating = '\0';
+
+    this->record_item.clear(); //empty whatever is in here so we don't mix data
+
+    std::cout << "*NOTE: Press enter after each item to then enter next.\n";
+    do
+    {
+        std::cout << "Enter each data item. Type \'done\' to finish." << std::endl;
+        std::cout << "Date(mm/dd/yyyy): ";
+        std::cin >> new_data.item_date;
+
+        std::cout << "Type(Food, Grocery, Bill, Tithing, Hobby/Entertainment): ";
+        std::cin >> new_data.item_type;
+
+        std::cout << "Name: ";
+        std::cin >> new_data.item_name;
+
+        std::cout << "Price (In USD): ";
+        std::cin >> new_data.item_price;
+
+        try
+        {
+            this->record_item.push_back(new_data);
+        }
+        catch(std::bad_alloc)
+        {
+            std::cout << "Cannot push_back new data" << std::endl;
+        }
+        index++;
+
+        std::cin.ignore();
+        std::cout << "Are you done adding items to record? Y/N" << std::endl;
+        std::cin >> finished_creating;
+
+        std::cin.ignore();
+    }
+    while(toupper(finished_creating) == 'N');
+
+//   this->readInRecord();
+    std::cout << std::endl << "You have added " << index << " new items to this new record." << std::endl;
+
+    //I think I want to comment out the function below
+    //because I don't know if I want to save this record or not.
+    //Best too leave it up to the user.
+//    this->saveRecord();
+}
+
 /*************************************************************************
 * This method is used for reviewing the contents of the given record object
 * that the method was invoked from.
