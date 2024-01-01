@@ -22,8 +22,10 @@ int main()
    //BEGINNING OF IMPLEMENTATION
 
    do {
-       std::cout << "What would you like to do?\n N - Create new document. --PLEASE!!! Make sure to save your work before create a new record!--\n L - Load The Data.\n U - Update Finances.\n R - Review Data.\n S - Save The Data\n Q - Exit Program." 
-      << std::endl << "\n>";
+       std::cout << "What would you like to do?\nN - Create new document." 
+                 << "--PLEASE!!! Make sure to save your work before create a new record!--\n"
+                 << "L - Load a Record.\nE - Edit Record.\nR - Review Record.\nS - Save Record\nQ - Exit." 
+                 << std::endl << "\n>";
        std::cin >> choice;
        std::cout << std::endl;
 
@@ -49,9 +51,9 @@ int main()
                 std::cout << e << std::endl;
             }
             break;
-         case 'U':
-         case 'u':
-            //updateData(recordContent);
+         case 'E':
+         case 'e':
+            record.editRecord();
             break;
          case 'R':
          case 'r':

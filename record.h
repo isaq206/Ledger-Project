@@ -17,12 +17,11 @@ class Record
             std::string item_type;
             std::string item_name;
             float item_price;
-            //std::string item_description; //Don't know if I want this yet.
+            std::string item_notes; //Don't know if I want this yet.
         };
 
         std::vector<record_body> record_item;
         std::string record_name;
-        std::stringstream ss_file_content;
         std::string new_record_content; //Used when updating a record with a new update or maybe entry.
         int review_counter;
 
@@ -32,15 +31,13 @@ class Record
         //Object functions
         void readInRecord() throw (const char*);
         void saveRecord() throw (const char*);
-        void updateRecord();
+        void editRecord();
         void createRecord();
         void reviewRecord();
 
         //Object Setters and Getters
         void setRecordName(std::string);
         std::string getRecordName();
-        void setSSFileContent();
-        std::stringstream getSSFileContent();
         void setNewRecord();
         void getNewRecord();
 };

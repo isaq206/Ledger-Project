@@ -3,6 +3,7 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <cstring>
 
 /*************************************************************************
 * This method is used to read in the text file. The ! in the actual text
@@ -11,28 +12,31 @@
 *************************************************************************/
 void Record::readInRecord() throw (const char*)
 {
+    std::ifstream fin;
+    std::stringstream temp_ss;
     record_body temp_body;
 
-    std::ifstream fin;
+    record_item.clear();
+
+    if (fin.is_open())
+        fin.close();
+
     fin.open(this->record_name);
 
     if (fin.fail())
         throw ("Error: Cannot read file.");
 
-//    if (!record_item.empty())
-//      record_item.clear();
+    temp_ss << fin.rdbuf();
 
-    this->ss_file_content << fin.rdbuf();
-    
-    fin.close();
-
-    while(this->ss_file_content >> temp_body.item_date 
-                                >> temp_body.item_type
-                                >> temp_body.item_name
-                                >> temp_body.item_price)
+    while(temp_ss >> temp_body.item_date 
+                  >> temp_body.item_type
+                  >> temp_body.item_name
+                  >> temp_body.item_price)
     {
+        std::getline(temp_ss, temp_body.item_notes);
         this->record_item.push_back(temp_body);
     }
+
     reviewRecord();
 }
 
@@ -53,99 +57,110 @@ void Record::saveRecord() throw (const char*)
    int counter = 0;
    for (std::vector<record_body>::iterator it = this->record_item.begin(); it != this->record_item.end(); it++, counter++)
    {
-       fout << this->record_item[counter].item_date << ", "
-            << this->record_item[counter].item_type << ", " 
-            << this->record_item[counter].item_name << ", "
-            << this->record_item[counter].item_price << "\n";
+       fout << this->record_item[counter].item_date << " "
+            << this->record_item[counter].item_type << " " 
+            << this->record_item[counter].item_name << " "
+            << this->record_item[counter].item_price << " "
+            << this->record_item[counter].item_notes << "\n";
    }
 
    fout.close();
+   
+   std::cout << "---Record saved---" << std::endl;
 }
 
-///*************************************************************************
-//* This method is used to update the contents of the text file once it has
-//* been loaded in or a new document has been created. The user will not need
-//* to type or even worry/know about the ! in the source file. The program
-//* takes care of that.
-//*************************************************************************/
-//void Record::updateRecord()
-//{
-//   std::string data;
-//   int index = 0;
-//   char choice[2] = "\0";
-//
-//   std::cin.ignore();
-//   std::cout << "Where do you want to start updating? (1, 2, 3,...) Based on \"Review Data\" option in main menu. \nYou can type \"E or e\""
-//        << "if you want to append at end of file. Type \"B or b\" if you want to go back to main menu.\n\n" << ">";
-//   std::cin >> choice;
-//   std::cout << std::endl;
-//
-//
-//	if(choice == "B" || choice == "b")
-//	{
-//		return;
-//	}
-//
-//	else if(choice == "E" || choice == "e")
-//	{
-//
-////This line was used for debugging and figuring out which if the logic will make it go to.
-////cout << "This means it is in the \"Update at the end\"\n";
-//
-//		std::cout << "*When finished, please enter \'done\' when finished updating.\n";
-//		std::cout << std::endl;
-//	    std::cin.ignore();
-//		do
-//		{
-//			std::cout << "Enter data. Press enter when finished with each input: ";
-//			std::getline(std::cin, data);
-//			if(data != "done")
-//			{
-//				this->record_item.push_back(data);
-//				std::cout << this->record_item[index] << std::endl;
-//				index++;
-//			}
-//			std::cin.ignore();
-//		}
-//		while(data != "done");
-//
-//		std::cout << std::endl;
-//		return;
-//	}
-//
-//	else
-//	{
-//		std::cout << "When finished, please enter \'done\' when finished updating.\n";
-//		std::cin.ignore();
-//		do
-//		{
-//			std::cout << "Enter data. Press enter when finished with each input. Type \'done\' when finished.: ";
-//			std::getline(std::cin, data);
-//			if(data != "done")
-//			{
-//				int count = this->record_item.size();
-//				int designation;
-//				designation = atoi(choice);
-//
-//				this->record_item.push_back(this->record_item[count-1]);
-//
-//
-//				for(std::vector<std::string>::reverse_iterator it = this->record_item.rbegin(); count > designation; ++it)
-//				{
-//					this->record_item[count] = this->record_item[count-1];
-//					count--;
-//				}
-//				this->record_item[count] = data;
-//			}
-////         cin.ignore();
-//		}
-//		while(data != "done");
-//
-//		std::cout << std::endl;
-//		return;
-//	}
-//}
-//
+/*************************************************************************
+* This method is used to update the contents of the text file once it has
+* been loaded in or a new document has been created. The user will not need
+* to type or even worry/know about the ! in the source file. The program
+* takes care of that.
+*************************************************************************/
+void Record::editRecord()
+{
+    bool loop = true;
+    char repeat;
+//    record_body temp_body = {"\0","\0","\0",0,"\0"};
+    char choice[1];
+    int ichoice;
+    std::string sbuffer = "\0";
+
+    reviewRecord();
+
+    std::cout << "Which item in record do you want to edit? (1,2,3,...). Enter \'Y\' to cancel." << std::endl;
+
+    std::cin >> choice;
+    std::cout << std::endl;
+    std::cin.ignore();
+
+
+	if(choice == "Y" || choice == "y")
+	{
+		return;
+	}
+	else if(isdigit(choice[0]))
+    {
+        ichoice = std::atoi(choice) - 1;
+        std::cout << "The value of ichoice right now: " << ichoice << std::endl;
+		std::cout << "Please enter the information that you want updated wit for each input. Press \'enter\' if you wish to skip that field.\n";
+        
+		while(!(choice[0] == 'Y' || choice[0] == 'y'))
+		{
+            std::cout << "Date mm/dd/yyyy (Current: " << this->record_item[ichoice].item_date << "): ";
+            std::getline(std::cin, sbuffer, '\n');
+            if(!sbuffer.empty())
+            {
+                this->record_item[ichoice].item_date = sbuffer;
+            }
+
+            std::cout << "Type (Current: " << this->record_item[ichoice].item_type << "): ";
+            std::getline(std::cin, sbuffer, '\n');
+            if(!sbuffer.empty())
+            {
+                this->record_item[ichoice].item_type = sbuffer;
+            }
+
+            std::cout << "Name (Current: " << this->record_item[ichoice].item_name << "): ";
+            std::getline(std::cin, sbuffer, '\n');
+            if(!sbuffer.empty())
+            {
+                this->record_item[ichoice].item_name = sbuffer;
+            }
+
+            std::cout << "Additional Notes (Current: " << this->record_item[ichoice].item_notes << "): ";
+            std::getline(std::cin, sbuffer, '\n');
+            if(!sbuffer.empty())
+            {
+                this->record_item[ichoice].item_notes = sbuffer;
+            }
+
+            std::cout << "Price (Current: " << this->record_item[ichoice].item_price << "): ";
+            std::getline(std::cin, sbuffer, '\n');
+            if(!sbuffer.empty())
+            {
+                this->record_item[ichoice].item_price = atof(sbuffer.c_str());
+            }
+
+
+            reviewRecord();
+            std::cout << "Are you finished editing this record? (Y/N)";
+            std::cin.get(choice[0]);
+            if(choice[0] == 'N' || choice[0] == 'n')
+            {
+                std::cin.ignore();
+                std::cout << "Please enter the item number that you wish to edit next: ";
+                std::cin >> ichoice;
+                ichoice -= 1;
+                std::cin.ignore();
+            }
+            else
+            {
+                choice[0] = 'Y';
+            }
+		}
+	}
+    std::cout << std::endl;
+}
+
 /*************************************************************************
 * This method is used to create a new text file. The ! in the actual text
 * file is used as a sort of key for the program to know where the end of one
@@ -175,6 +190,10 @@ void Record::createRecord()
         std::cout << "Price (In USD): ";
         std::cin >> new_data.item_price;
 
+        std::cin.ignore();
+
+        std::cout << "Additional Notes: ";
+        std::getline(std::cin, new_data.item_notes);
         try
         {
             this->record_item.push_back(new_data);
@@ -193,7 +212,6 @@ void Record::createRecord()
     }
     while(toupper(finished_creating) == 'N');
 
-//   this->readInRecord();
     std::cout << std::endl << "You have added " << index << " new items to this new record." << std::endl;
 
     //I think I want to comment out the function below
@@ -210,16 +228,19 @@ void Record::reviewRecord()
 {
     this->review_counter = 0;
     std::cout << "========================================================================================================================================================\n"
-              << "|" << std::setw(11) << "Date" << std::setw(7) << "|" << std::setw(11) << "Type" << std::setw(7) << "|" 
-              << std::setw(11) << "Name" << std::setw(7) << "|" << std::setw(12) << "Price" << std::setw(7) << "|\n";
+              << "|" << std::setw(11) << "Date" << std::setw(7) << "|" << std::setw(13) << "Type" << std::setw(9) << "|" 
+              << std::setw(11) << "Name" << std::setw(7) << "|" << std::setw(12) << "Price" << std::setw(7) << "|" 
+              << std::setw(32) << "Additional Notes" << std::setw(17) << "\n";
 
     for (std::vector<record_body>::iterator it = this->record_item.begin(); it != this->record_item.end(); it++)
     { 
         std::cout << "|" << std::setw(17) << (*it).item_date
-            << "|" << std::setw(17) << (*it).item_type
+            << "|" << std::setw(21) << (*it).item_type
             << "|" << std::setw(17) << (*it).item_name
-            << "|" << std::setw(17) << std::fixed << std::setprecision(2) << (*it).item_price
-            << "|" << std::endl;
+            << "|" << std::setw(18) << std::fixed << std::setprecision(2) << (*it).item_price
+            << "|" << (*it).item_notes
+            //<< "| " << std::setw(69)/*Nice*/ << std::left << (*it).item_notes
+            << std::endl;
         review_counter++;
     } 
     std::cout << "========================================================================================================================================================\n";
@@ -233,8 +254,6 @@ void Record::reviewRecord()
 *************************************************************************/
 void Record::setRecordName(std::string record_name) { this->record_name = record_name; }
 std::string Record::getRecordName() { return this->record_name; }
-void Record::setSSFileContent() { }
-std::stringstream Record::getSSFileContent() { }
 void Record::setNewRecord() { }
 void Record::getNewRecord() { }
 
