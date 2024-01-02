@@ -12,7 +12,6 @@
 *************************************************************************/
 void Record::readInRecord() throw (const char*)
 {
-	std::string path(std::getenv("HOME"));
     std::ifstream fin;
     std::stringstream temp_ss;
     record_body temp_body;
@@ -22,7 +21,7 @@ void Record::readInRecord() throw (const char*)
     if (fin.is_open())
         fin.close();
 
-    fin.open(path+"/Documents/Ledger_Records/"+this->record_name);
+    fin.open("~/Documents/Ledger_Records/"+this->record_name);
 
     if (fin.fail())
         throw ("Error: Cannot read file.");
@@ -48,12 +47,14 @@ void Record::readInRecord() throw (const char*)
 *************************************************************************/
 void Record::saveRecord() throw (const char*)
 {
-	std::string path(std::getenv("HOME"));
     std::ofstream fout;
-    	
+    std::string path("/home/firdouglas/Documents/Ledger_Records/", std::ios_base::out);i
+	std::cout << "The value of path: " << path << std::endl;
+	path += this->record_name;
+
 	try
 	{
-	    fout.open(path+"/Documents/Ledger_Records/"+this->record_name);
+	    fout.open(path);
 		if(fout.fail())
 			throw ("Error: Cannot save file.");
 	}
@@ -61,6 +62,14 @@ void Record::saveRecord() throw (const char*)
 	{
 		std::cout << "ERROR CAUGHT: " << e << std::endl;
 	}
+
+//    if (fout.fail()) {
+//        throw ("Error: Cannot save file.");
+//    }
+//	else
+//	{
+//		std::cout << "Fout was opened. fail() did not pass.\n";
+//	}
 
     int counter = 0;
     for (std::vector<record_body>::iterator it = this->record_item.begin(); it != this->record_item.end(); it++, counter++)
